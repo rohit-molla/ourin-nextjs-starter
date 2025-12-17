@@ -2,7 +2,11 @@
 
 import { memo, useMemo, useCallback, useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, useScroll, useMotionValueEvent, useInView } from 'framer-motion';
-import { ThemeToggle } from '@/components/theme-toggle';
+import { AnimatedThemeToggle } from '@/components/animated-theme-toggle';
+import { InteractiveHoverButton } from '@/components/ui/interactive-hover-button';
+import { MagicCard } from '@/components/ui/magic-card';
+import { StickyBanner } from '@/components/ui/sticky-banner';
+import { LayoutTextFlip } from '@/components/ui/layout-text-flip';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import { Link } from '@/i18n/navigation';
@@ -169,7 +173,7 @@ function FloatingNav() {
       }}
       animate={hidden ? 'hidden' : 'visible'}
       transition={{ duration: 0.35, ease: 'easeInOut' }}
-      className="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] max-w-4xl"
+      className="fixed top-12 left-1/2 -translate-x-1/2 z-40 w-[95%] max-w-4xl"
     >
       <div className={`px-4 md:px-6 py-3 flex items-center justify-between rounded-2xl border shadow-lg backdrop-blur-xl transition-all duration-300 ${
         scrolled 
@@ -190,7 +194,7 @@ function FloatingNav() {
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
-          <ThemeToggle />
+          <AnimatedThemeToggle variant="rectangle" start="bottom-up" width={52} height={28} />
           <Button size="sm" className="rounded-full px-4 hidden sm:flex font-semibold gap-2" onMouseEnter={playHover} onClick={playClick}>
             <Rocket className="w-4 h-4" />
             <span className="hidden lg:inline">{t('getStarted')}</span>
@@ -276,21 +280,29 @@ function FeatureCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
-      whileHover={{ y: -8, transition: { duration: 0.2 } }}
-      onMouseEnter={playHover}
-      className="group relative p-6 md:p-8 rounded-2xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 bg-gradient-to-br from-card/80 to-muted/20 backdrop-blur-sm cursor-pointer"
     >
-      <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-      
-      <div className="relative z-10">
-        <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-primary/10">
-          <div className="text-primary">{icon}</div>
+      <MagicCard
+        className="rounded-2xl cursor-pointer h-full"
+        gradientColor="rgba(139, 92, 246, 0.1)"
+        gradientFrom="#8B5CF6"
+        gradientTo="#EC4899"
+        gradientSize={250}
+      >
+        <div 
+          className="p-6 md:p-8 h-full"
+          onMouseEnter={playHover}
+        >
+          <div className="w-14 h-14 rounded-2xl bg-muted/50 flex items-center justify-center mb-6 border border-border/50">
+            <div className="text-foreground">{icon}</div>
+          </div>
+          <h3 className={`text-xl font-bold mb-3 tracking-tight ${fontClass || 'font-display'}`}>
+            {title}
+          </h3>
+          <p className="text-muted-foreground leading-relaxed text-sm md:text-base font-sans">
+            {description}
+          </p>
         </div>
-        <h3 className={`text-xl font-bold mb-3 tracking-tight group-hover:text-primary transition-colors ${fontClass || 'font-display'}`}>{title}</h3>
-        <p className="text-muted-foreground leading-relaxed text-sm md:text-base font-sans">
-          {description}
-        </p>
-      </div>
+      </MagicCard>
     </motion.div>
   );
 }
@@ -544,6 +556,20 @@ export default function Home() {
         <ScrollProgress />
       </Suspense>
       <GridBackground />
+      
+      {/* Announcement Banner */}
+      <StickyBanner 
+        className="bg-gradient-to-r from-violet-600 via-fuchsia-600 to-pink-600"
+        hideOnScroll
+      >
+        <span className="text-white text-sm font-medium">
+          🎉 <strong>v1.5.0</strong> is here! Sound System, Spotify Player, and more. 
+          <a href="https://github.com/LuckyArch/ourin-nextjs-starter" className="underline ml-2 hover:text-white/80">
+            View on GitHub →
+          </a>
+        </span>
+      </StickyBanner>
+      
       <FloatingNav />
       <Suspense fallback={null}>
         <SpotifyModal playlistId="37i9dQZF1DWWY64wDtewQt" position="bottom-left" />
@@ -564,7 +590,7 @@ export default function Home() {
             <span>{t('hero.badge')}</span>
           </motion.div>
 
-          {/* Main Heading - Using different fonts */}
+          {/* Main Heading - Original structure with animated highlight */}
           <motion.h1 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -572,9 +598,11 @@ export default function Home() {
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6 md:mb-8 leading-[1.1]"
           >
             <span className="font-poppins">{t('hero.title')}</span>{' '}
-            <span className="bg-gradient-to-r from-violet-500 via-fuchsia-500 to-pink-500 bg-clip-text text-transparent font-display">
-              {t('hero.titleHighlight')}
-            </span>
+            <LayoutTextFlip
+              text=""
+              words={[t('hero.titleHighlight'), 'Next.js 16', 'TypeScript 5', 'Tailwind 4']}
+              duration={3000}
+            />
             <br />
             <span className="font-serif italic">{t('hero.titleEnd')}</span>
           </motion.h1>
@@ -587,9 +615,9 @@ export default function Home() {
             className="text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed font-sans"
           >
             {t('hero.subtitle')}{' '}
-            <span className="text-foreground font-semibold font-space">{t('hero.utilities')}</span>,{' '}
-            <span className="text-foreground font-semibold font-raleway">{t('hero.fonts')}</span>, {t('hero.and')}{' '}
-            <span className="text-foreground font-semibold font-manrope">{t('hero.components')}</span>.
+            <span className="text-foreground font-semibold font-space underline decoration-violet-500 decoration-2 underline-offset-4">{t('hero.utilities')}</span>,{' '}
+            <span className="text-foreground font-semibold font-raleway underline decoration-pink-500 decoration-2 underline-offset-4">{t('hero.fonts')}</span>, {t('hero.and')}{' '}
+            <span className="text-foreground font-semibold font-manrope underline decoration-cyan-500 decoration-2 underline-offset-4">{t('hero.components')}</span>.
           </motion.p>
 
           {/* CTA Buttons */}
@@ -599,10 +627,13 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center gap-4 mb-12 w-full sm:w-auto"
           >
-            <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-105 transition-all gap-2" onMouseEnter={playHover} onClick={playClick}>
-              <Rocket className="w-5 h-5" />
+            <InteractiveHoverButton 
+              className="w-full sm:w-auto h-14 px-8 text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 bg-primary text-primary-foreground"
+              onMouseEnter={playHover}
+              onClick={playClick}
+            >
               {t('hero.ctaPrimary')}
-            </Button>
+            </InteractiveHoverButton>
             <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 rounded-full text-base gap-2 hover:bg-muted/50" onMouseEnter={playHover} onClick={playClick}>
               <Github className="w-5 h-5" />
               {t('hero.ctaSecondary')}
@@ -715,6 +746,7 @@ export default function Home() {
               {t('features.subtitle')}
             </p>
           </motion.div>
+
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             <FeatureCard 

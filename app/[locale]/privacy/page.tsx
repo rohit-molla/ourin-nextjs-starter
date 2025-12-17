@@ -34,7 +34,7 @@ export default function PrivacyPage() {
             
             <div className="prose prose-gray dark:prose-invert max-w-none space-y-8">
               <p className="text-lg text-muted-foreground leading-relaxed">
-                Last updated: December 17, 2024
+                Last updated: December 17, 5
               </p>
 
               <section className="space-y-4">

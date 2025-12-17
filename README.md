@@ -321,9 +321,9 @@ Format dates in a human-readable way without heavy libraries like Moment.js or d
 ```typescript
 import { formatRelativeTime, formatDuration, parseDate } from '@/lib/utils/date';
 
-formatRelativeTime(new Date('2024-12-15')); // "2 days ago"
+formatRelativeTime(new Date('2025-12-15')); // "2 days ago"
 formatDuration(3661000);                    // "1h 1m 1s"
-parseDate('2024-12-17');                    // Date object
+parseDate('2025-12-17');                    // Date object
 ```
 
 **All Functions:** `formatRelativeTime`, `formatDuration`, `parseDate`, `isValidDate`, `getStartOfDay`, `getEndOfDay`, `addDays`, `subtractDays`, `daysBetween`, `formatDate`, `isToday`, `isYesterday`, `isFuture`, `isPast`.

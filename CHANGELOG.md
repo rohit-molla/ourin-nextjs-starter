@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.5.0] - 2024-12-17
+## [1.5.0] - 2025-12-17
 
 ### 🎯 Minor Update: UX Enhancements
 
@@ -29,7 +29,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.1] - 2024-12-17
+## [1.4.1] - 2025-12-17
 
 ### 🎯 Patch: UI Optimization & Sound Integration
 
@@ -50,7 +50,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.4.0] - 2024-12-17
+## [1.4.0] - 202512-17
 
 ### 🔊 Major Update: Sound System & Spotify Player
 
@@ -95,7 +95,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.3.0] - 2024-12-17
+## [1.3.0] - 2025-12-17
 
 ### 🌍 Major Update: Full Internationalization (i18n)
 
@@ -131,7 +131,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.2.0] - 2024-12-17
+## [1.2.0] - 2025-12-17
 
 ### 🚀 Major Update: API Routes, Middleware, Extended Utilities
 
@@ -185,7 +185,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.1.0] - 2024-12-17
+## [1.1.0] - 2025-12-17
 
 ### 🚀 Major Update: Extended Typography & Premium UI
 
@@ -230,7 +230,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
-## [1.0.0] - 2024-12-17
+## [1.0.0] - 2025-12-17
 
 ### 🎉 Initial Release
 
