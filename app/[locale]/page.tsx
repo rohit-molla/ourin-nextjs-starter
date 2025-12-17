@@ -47,27 +47,27 @@ function GridBackground() {
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
       {/* === SPOTLIGHT EFFECTS === */}
       {/* Main center spotlight */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] rounded-full bg-gradient-radial from-primary/8 via-transparent to-transparent blur-3xl" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.15)_0%,transparent_50%)]" />
       
       {/* Top spotlight */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[60%] h-[40%] rounded-full bg-gradient-to-b from-violet-500/20 to-transparent blur-[80px]" />
+      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full bg-[radial-gradient(ellipse,rgba(139,92,246,0.2)_0%,transparent_70%)]" />
       
       {/* Bottom spotlight */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-1/2 w-[70%] h-[40%] rounded-full bg-gradient-to-t from-cyan-500/15 to-transparent blur-[80px]" />
+      <div className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full bg-[radial-gradient(ellipse,rgba(6,182,212,0.15)_0%,transparent_70%)]" />
 
       {/* === GRADIENT ORBS === */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-gradient-to-br from-violet-600/25 to-fuchsia-500/10 blur-[80px] animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-gradient-to-br from-cyan-500/15 to-blue-600/25 blur-[80px] animate-pulse" style={{ animationDelay: '1.5s' }} />
-      <div className="absolute top-[50%] left-[60%] w-[20%] h-[20%] rounded-full bg-emerald-500/15 blur-[60px] animate-pulse" style={{ animationDelay: '0.5s' }} />
-      <div className="absolute top-[20%] right-[10%] w-[15%] h-[15%] rounded-full bg-pink-500/10 blur-[50px] animate-pulse" style={{ animationDelay: '2s' }} />
+      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-gradient-to-br from-violet-600/30 to-fuchsia-500/15 blur-[80px] animate-pulse" />
+      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-600/30 blur-[80px] animate-pulse" style={{ animationDelay: '1.5s' }} />
+      <div className="absolute top-[50%] left-[60%] w-[20%] h-[20%] rounded-full bg-emerald-500/20 blur-[60px] animate-pulse" style={{ animationDelay: '0.5s' }} />
+      <div className="absolute top-[20%] right-[10%] w-[15%] h-[15%] rounded-full bg-pink-500/15 blur-[50px] animate-pulse" style={{ animationDelay: '2s' }} />
       
-      {/* === BENTO GRID PATTERN - HIGH VISIBILITY === */}
+      {/* === BENTO GRID PATTERN - VERY HIGH VISIBILITY === */}
       <div 
-        className="absolute inset-0 opacity-[0.08] dark:opacity-[0.12]"
+        className="absolute inset-0"
         style={{
           backgroundImage: `
-            linear-gradient(to right, currentColor 1px, transparent 1px),
-            linear-gradient(to bottom, currentColor 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)
           `,
           backgroundSize: '80px 80px',
         }}
@@ -75,62 +75,74 @@ function GridBackground() {
       
       {/* Secondary smaller grid for bento effect */}
       <div 
-        className="absolute inset-0 opacity-[0.04] dark:opacity-[0.06]"
+        className="absolute inset-0"
         style={{
           backgroundImage: `
-            linear-gradient(to right, currentColor 1px, transparent 1px),
-            linear-gradient(to bottom, currentColor 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
           `,
           backgroundSize: '20px 20px',
         }}
       />
+
+      {/* === GRID INTERSECTION DOTS === */}
+      <div 
+        className="absolute inset-0"
+        style={{
+          backgroundImage: `radial-gradient(circle, rgba(139,92,246,0.3) 1px, transparent 1px)`,
+          backgroundSize: '80px 80px',
+        }}
+      />
       
       {/* === ABSTRACT DECORATIONS - LEFT SIDE === */}
-      <div className="absolute left-0 top-[20%] w-[300px] h-[400px]">
-        {/* Abstract shape 1 - Circle */}
-        <div className="absolute top-0 left-[-50px] w-[200px] h-[200px] rounded-full border border-primary/20 dark:border-primary/30" />
+      <div className="absolute left-0 top-[15%] w-[350px] h-[500px] hidden md:block">
+        {/* Abstract shape 1 - Large Circle Ring */}
+        <div className="absolute top-0 left-[-80px] w-[250px] h-[250px] rounded-full border-2 border-violet-500/30" />
         {/* Abstract shape 2 - Smaller circle */}
-        <div className="absolute top-[80px] left-[20px] w-[80px] h-[80px] rounded-full bg-gradient-to-br from-violet-500/10 to-transparent" />
-        {/* Abstract shape 3 - Line */}
-        <div className="absolute top-[150px] left-[-30px] w-[150px] h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent rotate-45" />
+        <div className="absolute top-[100px] left-[30px] w-[100px] h-[100px] rounded-full bg-gradient-to-br from-violet-500/20 to-transparent" />
+        {/* Abstract shape 3 - Diagonal Line */}
+        <div className="absolute top-[180px] left-[-20px] w-[200px] h-[2px] bg-gradient-to-r from-transparent via-violet-500/50 to-transparent rotate-45" />
         {/* Abstract shape 4 - Square */}
-        <div className="absolute top-[250px] left-[10px] w-[60px] h-[60px] border border-cyan-500/20 rotate-45" />
-        {/* Abstract dots */}
-        <div className="absolute top-[320px] left-[40px] w-3 h-3 rounded-full bg-primary/30" />
-        <div className="absolute top-[340px] left-[60px] w-2 h-2 rounded-full bg-violet-500/40" />
-        <div className="absolute top-[310px] left-[80px] w-4 h-4 rounded-full bg-fuchsia-500/20" />
+        <div className="absolute top-[300px] left-[20px] w-[80px] h-[80px] border-2 border-cyan-500/30 rotate-45" />
+        {/* Abstract shape 5 - Small filled circle */}
+        <div className="absolute top-[420px] left-[50px] w-[30px] h-[30px] rounded-full bg-primary/40" />
+        {/* Abstract dots cluster */}
+        <div className="absolute top-[350px] left-[120px] w-4 h-4 rounded-full bg-violet-500/50" />
+        <div className="absolute top-[380px] left-[140px] w-3 h-3 rounded-full bg-fuchsia-500/40" />
+        <div className="absolute top-[360px] left-[160px] w-5 h-5 rounded-full bg-primary/30" />
       </div>
       
       {/* === ABSTRACT DECORATIONS - RIGHT SIDE === */}
-      <div className="absolute right-0 bottom-[20%] w-[300px] h-[400px]">
+      <div className="absolute right-0 bottom-[15%] w-[350px] h-[500px] hidden md:block">
         {/* Abstract shape 1 - Large ring */}
-        <div className="absolute bottom-0 right-[-80px] w-[250px] h-[250px] rounded-full border border-cyan-500/20 dark:border-cyan-500/30" />
+        <div className="absolute bottom-0 right-[-100px] w-[300px] h-[300px] rounded-full border-2 border-cyan-500/30" />
         {/* Abstract shape 2 - Inner ring */}
-        <div className="absolute bottom-[40px] right-[-30px] w-[150px] h-[150px] rounded-full border border-blue-500/15" />
+        <div className="absolute bottom-[50px] right-[-40px] w-[180px] h-[180px] rounded-full border border-blue-500/25" />
         {/* Abstract shape 3 - Gradient blob */}
-        <div className="absolute bottom-[100px] right-[30px] w-[100px] h-[100px] rounded-full bg-gradient-to-tl from-cyan-500/15 to-transparent" />
+        <div className="absolute bottom-[120px] right-[40px] w-[120px] h-[120px] rounded-full bg-gradient-to-tl from-cyan-500/25 to-transparent" />
         {/* Abstract shape 4 - Diamond */}
-        <div className="absolute bottom-[220px] right-[20px] w-[50px] h-[50px] border border-emerald-500/25 rotate-45" />
+        <div className="absolute bottom-[280px] right-[30px] w-[70px] h-[70px] border-2 border-emerald-500/35 rotate-45" />
         {/* Cross lines */}
-        <div className="absolute bottom-[280px] right-[60px] w-[100px] h-[1px] bg-gradient-to-r from-transparent via-primary/20 to-transparent -rotate-12" />
-        <div className="absolute bottom-[260px] right-[50px] w-[80px] h-[1px] bg-gradient-to-r from-transparent via-cyan-500/25 to-transparent rotate-12" />
+        <div className="absolute bottom-[360px] right-[80px] w-[150px] h-[2px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent -rotate-12" />
+        <div className="absolute bottom-[340px] right-[60px] w-[100px] h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent rotate-12" />
         {/* Abstract dots */}
-        <div className="absolute bottom-[350px] right-[100px] w-3 h-3 rounded-full bg-cyan-500/30" />
-        <div className="absolute bottom-[370px] right-[120px] w-2 h-2 rounded-full bg-blue-500/40" />
+        <div className="absolute bottom-[420px] right-[120px] w-4 h-4 rounded-full bg-cyan-500/50" />
+        <div className="absolute bottom-[450px] right-[150px] w-3 h-3 rounded-full bg-blue-500/40" />
       </div>
       
       {/* === TOP DECORATIONS === */}
-      <div className="absolute top-0 left-[30%] w-[200px] h-[100px]">
-        <div className="absolute top-[-20px] left-0 w-[80px] h-[80px] rounded-full border border-violet-500/15 dark:border-violet-500/25" />
-        <div className="absolute top-[20px] left-[60px] w-[40px] h-[40px] border border-primary/20 rotate-45" />
+      <div className="absolute top-0 left-[25%] w-[250px] h-[150px] hidden lg:block">
+        <div className="absolute top-[-30px] left-0 w-[100px] h-[100px] rounded-full border-2 border-violet-500/25" />
+        <div className="absolute top-[30px] left-[80px] w-[50px] h-[50px] border-2 border-primary/30 rotate-45" />
+        <div className="absolute top-[10px] left-[150px] w-[20px] h-[20px] rounded-full bg-fuchsia-500/40" />
       </div>
       
       {/* === FLOATING ABSTRACT SHAPES === */}
-      <div className="absolute top-[60%] left-[10%] w-[100px] h-[100px] rounded-full border border-dashed border-primary/10 animate-spin" style={{ animationDuration: '30s' }} />
-      <div className="absolute top-[30%] right-[15%] w-[60px] h-[60px] rounded-full border border-dashed border-cyan-500/15 animate-spin" style={{ animationDuration: '25s', animationDirection: 'reverse' }} />
+      <div className="absolute top-[60%] left-[8%] w-[120px] h-[120px] rounded-full border-2 border-dashed border-violet-500/20 animate-spin hidden lg:block" style={{ animationDuration: '40s' }} />
+      <div className="absolute top-[25%] right-[12%] w-[80px] h-[80px] rounded-full border-2 border-dashed border-cyan-500/25 animate-spin hidden lg:block" style={{ animationDuration: '30s', animationDirection: 'reverse' }} />
       
       {/* === RADIAL FADE FROM CENTER === */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_30%,var(--background)_80%)]" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_40%,rgba(0,0,0,0.3)_100%)]" />
     </div>
   );
 }
