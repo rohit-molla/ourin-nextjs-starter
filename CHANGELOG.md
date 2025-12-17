@@ -7,6 +7,94 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ---
 
+## [1.5.0] - 2024-12-17
+
+### 🎯 Minor Update: UX Enhancements
+
+#### Added
+
+##### Scroll Progress Indicator (`components/scroll-progress.tsx`)
+- Horizontal progress bar at the top of the page
+- Smooth spring animation with Framer Motion
+- Gradient styling (violet → fuchsia → pink)
+- Optional percentage display
+- Configurable height, position, and z-index
+
+##### Back to Top Button (`components/back-to-top.tsx`)
+- Floating button that appears after scrolling
+- SVG progress ring showing scroll position
+- Sound effects on hover and click
+- Smooth scroll animation
+- Fully configurable threshold and position
+
+---
+
+## [1.4.1] - 2024-12-17
+
+### 🎯 Patch: UI Optimization & Sound Integration
+
+#### Added
+- **Sound effects** on all interactive components:
+  - FloatingNav: logo, nav links, Get Started button
+  - LanguageSwitcher: toggle button, locale options
+  - FeatureCard: hover sound
+  - CopyCommand: hover, click, and success sound
+  - FontShowcase: hover on font cards
+  - HooksShowcase: hover on hook cards
+  - UtilitiesShowcase: hover on category cards
+  - Hero CTA buttons: hover and click sounds
+
+#### Changed
+- Added `cursor-pointer` to all interactive cards for better UX
+- Optimized sound volume levels (0.1-0.15) for subtle feedback
+
+---
+
+## [1.4.0] - 2024-12-17
+
+### 🔊 Major Update: Sound System & Spotify Player
+
+#### Added
+
+##### Sound Utilities (`lib/utils/sound.ts`)
+- **`createSound(src, volume)`**: Create reusable HTMLAudioElement
+- **`playSound(src, volume)`**: One-shot sound playback
+- **`preloadSounds(sources[])`**: Preload multiple audio files
+- **`SynthSound` class**: Web Audio API synthetic sound generator
+  - `playClick()`: Short click feedback sound
+  - `playHover()`: Subtle hover feedback sound
+  - `playSuccess()`: Ascending success tone
+  - `playError()`: Low buzz error tone
+- **`SoundManager` singleton**: Centralized sound management with enable/disable and volume control
+
+##### Sound Hooks (`hooks/use-sound.ts`)
+- **`useSound(src, options)`**: Full-featured audio playback hook
+  - Play, pause, stop, resume controls
+  - isPlaying, currentTime, duration state
+  - Volume and playback rate control
+  - Event callbacks (onEnd, onPlay, onError)
+- **`useSoundEffects(volume)`**: Simplified hook for UI feedback
+  - No audio files needed (Web Audio API)
+  - `playHover()`, `playClick()`, `playSuccess()`
+  - Enable/disable toggle
+
+##### Spotify Player (`components/spotify-modal.tsx`)
+- **Floating Music Button**: Animated button with Spotify green gradient
+- **Modal Popup**: Clean modal with header, Spotify embed, and footer
+- **Features**:
+  - Supports playlist, track, album, and custom embed URLs
+  - Loading skeleton during iframe load
+  - Sound toggle button (mute/unmute hover/click sounds)
+  - Close on Escape key or backdrop click
+  - Smooth Framer Motion animations
+
+#### Changed
+- Homepage now includes floating Spotify player
+- Updated utility count to 190+ functions
+- Updated hook count to 22+ hooks
+
+---
+
 ## [1.3.0] - 2024-12-17
 
 ### 🌍 Major Update: Full Internationalization (i18n)

@@ -250,3 +250,12 @@ export {
   generateCSRFToken,
 } from './crypto';
 
+// New in v1.4 - Sound utilities
+export {
+  createSound,
+  playSound,
+  preloadSounds,
+  SynthSound,
+  synth,
+  SoundManager,
+} from './sound';

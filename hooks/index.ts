@@ -33,3 +33,5 @@ export { useCountdown } from './use-countdown';
 export { useElementSize } from './use-element-size';
 export { useInterval } from './use-interval';
 
+// New in v1.4 - Sound
+export { useSound, useSoundEffects } from './use-sound';

@@ -1,5 +1,6 @@
 'use client';
 
+import { memo, useMemo, useCallback, useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { motion, useScroll, useMotionValueEvent, useInView } from 'framer-motion';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Button } from '@/components/ui/button';
@@ -30,9 +31,15 @@ import {
   History,
   Languages,
 } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
 import { useRouter, usePathname } from '@/i18n/navigation';
 import { routing } from '@/i18n/routing';
+import { useSoundEffects } from '@/hooks/use-sound';
+
+// Dynamic imports for heavy components (code-split)
+const SpotifyModal = lazy(() => import('@/components/spotify-modal').then(m => ({ default: m.SpotifyModal })));
+const ScrollProgress = lazy(() => import('@/components/scroll-progress').then(m => ({ default: m.ScrollProgress })));
+const BackToTop = lazy(() => import('@/components/back-to-top').then(m => ({ default: m.BackToTop })));
+
 
 // --- Animation Variants ---
 const fadeInUp = {
@@ -45,104 +52,43 @@ const fadeInUp = {
 function GridBackground() {
   return (
     <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      {/* === SPOTLIGHT EFFECTS === */}
-      {/* Main center spotlight */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[100%] h-[100%] rounded-full bg-[radial-gradient(circle,rgba(139,92,246,0.15)_0%,transparent_50%)]" />
+      {/* === SUBTLE SPOTLIGHT - Hero area only === */}
+      {/* Dark mode: purple glow, Light mode: softer purple glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[120%] h-[70vh] dark:bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.15),transparent)] bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(139,92,246,0.1),transparent)]" />
       
-      {/* Top spotlight */}
-      <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full bg-[radial-gradient(ellipse,rgba(139,92,246,0.2)_0%,transparent_70%)]" />
-      
-      {/* Bottom spotlight */}
-      <div className="absolute bottom-[-20%] left-1/2 -translate-x-1/2 w-[80%] h-[60%] rounded-full bg-[radial-gradient(ellipse,rgba(6,182,212,0.15)_0%,transparent_70%)]" />
-
-      {/* === GRADIENT ORBS === */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[40%] rounded-full bg-gradient-to-br from-violet-600/30 to-fuchsia-500/15 blur-[80px] animate-pulse" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[40%] h-[40%] rounded-full bg-gradient-to-br from-cyan-500/20 to-blue-600/30 blur-[80px] animate-pulse" style={{ animationDelay: '1.5s' }} />
-      <div className="absolute top-[50%] left-[60%] w-[20%] h-[20%] rounded-full bg-emerald-500/20 blur-[60px] animate-pulse" style={{ animationDelay: '0.5s' }} />
-      <div className="absolute top-[20%] right-[10%] w-[15%] h-[15%] rounded-full bg-pink-500/15 blur-[50px] animate-pulse" style={{ animationDelay: '2s' }} />
-      
-      {/* === BENTO GRID PATTERN - VERY HIGH VISIBILITY === */}
+      {/* === BENTO GRID PATTERN === */}
+      {/* Dark mode grid - white lines */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 hidden dark:block"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.06) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.06) 1px, transparent 1px)
+            linear-gradient(to right, rgba(255,255,255,0.04) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(255,255,255,0.04) 1px, transparent 1px)
           `,
-          backgroundSize: '80px 80px',
+          backgroundSize: '60px 60px',
         }}
       />
-      
-      {/* Secondary smaller grid for bento effect */}
+      {/* Light mode grid - dark lines */}
       <div 
-        className="absolute inset-0"
+        className="absolute inset-0 dark:hidden"
         style={{
           backgroundImage: `
-            linear-gradient(to right, rgba(255,255,255,0.03) 1px, transparent 1px),
-            linear-gradient(to bottom, rgba(255,255,255,0.03) 1px, transparent 1px)
+            linear-gradient(to right, rgba(0,0,0,0.08) 1px, transparent 1px),
+            linear-gradient(to bottom, rgba(0,0,0,0.08) 1px, transparent 1px)
           `,
-          backgroundSize: '20px 20px',
-        }}
-      />
-
-      {/* === GRID INTERSECTION DOTS === */}
-      <div 
-        className="absolute inset-0"
-        style={{
-          backgroundImage: `radial-gradient(circle, rgba(139,92,246,0.3) 1px, transparent 1px)`,
-          backgroundSize: '80px 80px',
+          backgroundSize: '60px 60px',
         }}
       />
       
-      {/* === ABSTRACT DECORATIONS - LEFT SIDE === */}
-      <div className="absolute left-0 top-[15%] w-[350px] h-[500px] hidden md:block">
-        {/* Abstract shape 1 - Large Circle Ring */}
-        <div className="absolute top-0 left-[-80px] w-[250px] h-[250px] rounded-full border-2 border-violet-500/30" />
-        {/* Abstract shape 2 - Smaller circle */}
-        <div className="absolute top-[100px] left-[30px] w-[100px] h-[100px] rounded-full bg-gradient-to-br from-violet-500/20 to-transparent" />
-        {/* Abstract shape 3 - Diagonal Line */}
-        <div className="absolute top-[180px] left-[-20px] w-[200px] h-[2px] bg-gradient-to-r from-transparent via-violet-500/50 to-transparent rotate-45" />
-        {/* Abstract shape 4 - Square */}
-        <div className="absolute top-[300px] left-[20px] w-[80px] h-[80px] border-2 border-cyan-500/30 rotate-45" />
-        {/* Abstract shape 5 - Small filled circle */}
-        <div className="absolute top-[420px] left-[50px] w-[30px] h-[30px] rounded-full bg-primary/40" />
-        {/* Abstract dots cluster */}
-        <div className="absolute top-[350px] left-[120px] w-4 h-4 rounded-full bg-violet-500/50" />
-        <div className="absolute top-[380px] left-[140px] w-3 h-3 rounded-full bg-fuchsia-500/40" />
-        <div className="absolute top-[360px] left-[160px] w-5 h-5 rounded-full bg-primary/30" />
-      </div>
-      
-      {/* === ABSTRACT DECORATIONS - RIGHT SIDE === */}
-      <div className="absolute right-0 bottom-[15%] w-[350px] h-[500px] hidden md:block">
-        {/* Abstract shape 1 - Large ring */}
-        <div className="absolute bottom-0 right-[-100px] w-[300px] h-[300px] rounded-full border-2 border-cyan-500/30" />
-        {/* Abstract shape 2 - Inner ring */}
-        <div className="absolute bottom-[50px] right-[-40px] w-[180px] h-[180px] rounded-full border border-blue-500/25" />
-        {/* Abstract shape 3 - Gradient blob */}
-        <div className="absolute bottom-[120px] right-[40px] w-[120px] h-[120px] rounded-full bg-gradient-to-tl from-cyan-500/25 to-transparent" />
-        {/* Abstract shape 4 - Diamond */}
-        <div className="absolute bottom-[280px] right-[30px] w-[70px] h-[70px] border-2 border-emerald-500/35 rotate-45" />
-        {/* Cross lines */}
-        <div className="absolute bottom-[360px] right-[80px] w-[150px] h-[2px] bg-gradient-to-r from-transparent via-cyan-500/40 to-transparent -rotate-12" />
-        <div className="absolute bottom-[340px] right-[60px] w-[100px] h-[2px] bg-gradient-to-r from-transparent via-primary/30 to-transparent rotate-12" />
-        {/* Abstract dots */}
-        <div className="absolute bottom-[420px] right-[120px] w-4 h-4 rounded-full bg-cyan-500/50" />
-        <div className="absolute bottom-[450px] right-[150px] w-3 h-3 rounded-full bg-blue-500/40" />
-      </div>
-      
-      {/* === TOP DECORATIONS === */}
-      <div className="absolute top-0 left-[25%] w-[250px] h-[150px] hidden lg:block">
-        <div className="absolute top-[-30px] left-0 w-[100px] h-[100px] rounded-full border-2 border-violet-500/25" />
-        <div className="absolute top-[30px] left-[80px] w-[50px] h-[50px] border-2 border-primary/30 rotate-45" />
-        <div className="absolute top-[10px] left-[150px] w-[20px] h-[20px] rounded-full bg-fuchsia-500/40" />
-      </div>
-      
-      {/* === FLOATING ABSTRACT SHAPES === */}
-      <div className="absolute top-[60%] left-[8%] w-[120px] h-[120px] rounded-full border-2 border-dashed border-violet-500/20 animate-spin hidden lg:block" style={{ animationDuration: '40s' }} />
-      <div className="absolute top-[25%] right-[12%] w-[80px] h-[80px] rounded-full border-2 border-dashed border-cyan-500/25 animate-spin hidden lg:block" style={{ animationDuration: '30s', animationDirection: 'reverse' }} />
-      
-      {/* === RADIAL FADE FROM CENTER === */}
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,transparent_40%,rgba(0,0,0,0.3)_100%)]" />
+      {/* === FADE OVERLAYS - Smooth edges === */}
+      {/* Top fade */}
+      <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-background to-transparent" />
+      {/* Bottom fade */}
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background via-background/60 to-transparent" />
+      {/* Left fade */}
+      <div className="absolute top-0 left-0 bottom-0 w-24 bg-gradient-to-r from-background to-transparent" />
+      {/* Right fade */}
+      <div className="absolute top-0 right-0 bottom-0 w-24 bg-gradient-to-l from-background to-transparent" />
     </div>
   );
 }
@@ -153,16 +99,24 @@ function LanguageSwitcher() {
   const [isOpen, setIsOpen] = useState(false);
   const router = useRouter();
   const pathname = usePathname();
+  const { playHover, playClick } = useSoundEffects(0.15);
 
   const handleLocaleChange = (locale: string) => {
+    playClick();
     router.replace(pathname, { locale });
     setIsOpen(false);
+  };
+
+  const handleToggle = () => {
+    playClick();
+    setIsOpen(!isOpen);
   };
 
   return (
     <div className="relative">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleToggle}
+        onMouseEnter={playHover}
         className="flex items-center gap-2 px-3 py-2 rounded-full bg-muted/50 hover:bg-muted transition-colors text-sm font-medium"
       >
         <Globe className="w-4 h-4" />
@@ -179,6 +133,7 @@ function LanguageSwitcher() {
             <button
               key={locale}
               onClick={() => handleLocaleChange(locale)}
+              onMouseEnter={playHover}
               className="w-full px-4 py-2.5 text-left text-sm hover:bg-muted transition-colors flex items-center gap-2"
             >
               <span className="text-lg">{locale === 'en' ? '🇺🇸' : '🇮🇩'}</span>
@@ -197,6 +152,7 @@ function FloatingNav() {
   const { scrollY } = useScroll();
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { playHover, playClick } = useSoundEffects(0.15);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() || 0;
@@ -220,22 +176,22 @@ function FloatingNav() {
           ? 'bg-background/90 border-border/50' 
           : 'bg-background/60 border-white/10'
       }`}>
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3" onMouseEnter={playHover}>
           <Image src="/logo.png" alt="Ourin Logo" width={32} height={32} className="rounded-full" />
           <span className="font-display font-bold text-lg tracking-tight hidden sm:inline">Ourin</span>
         </Link>
         
         <div className="hidden md:flex items-center gap-6 text-sm font-medium text-foreground/70">
-          <a href="#features" className="hover:text-foreground transition-colors">{t('features')}</a>
-          <a href="#hooks" className="hover:text-foreground transition-colors">Hooks</a>
-          <a href="#utilities" className="hover:text-foreground transition-colors">Utils</a>
-          <a href="#fonts" className="hover:text-foreground transition-colors">{t('fonts')}</a>
+          <a href="#features" className="hover:text-foreground transition-colors" onMouseEnter={playHover} onClick={playClick}>{t('features')}</a>
+          <a href="#hooks" className="hover:text-foreground transition-colors" onMouseEnter={playHover} onClick={playClick}>Hooks</a>
+          <a href="#utilities" className="hover:text-foreground transition-colors" onMouseEnter={playHover} onClick={playClick}>Utils</a>
+          <a href="#fonts" className="hover:text-foreground transition-colors" onMouseEnter={playHover} onClick={playClick}>{t('fonts')}</a>
         </div>
 
         <div className="flex items-center gap-2">
           <LanguageSwitcher />
           <ThemeToggle />
-          <Button size="sm" className="rounded-full px-4 hidden sm:flex font-semibold gap-2">
+          <Button size="sm" className="rounded-full px-4 hidden sm:flex font-semibold gap-2" onMouseEnter={playHover} onClick={playClick}>
             <Rocket className="w-4 h-4" />
             <span className="hidden lg:inline">{t('getStarted')}</span>
           </Button>
@@ -312,6 +268,8 @@ function FeatureCard({
   delay?: number;
   fontClass?: string;
 }) {
+  const { playHover } = useSoundEffects(0.1);
+  
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -319,7 +277,8 @@ function FeatureCard({
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay }}
       whileHover={{ y: -8, transition: { duration: 0.2 } }}
-      className="group relative p-6 md:p-8 rounded-2xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 bg-gradient-to-br from-card/80 to-muted/20 backdrop-blur-sm"
+      onMouseEnter={playHover}
+      className="group relative p-6 md:p-8 rounded-2xl overflow-hidden border border-border/50 hover:border-primary/30 transition-all duration-300 bg-gradient-to-br from-card/80 to-muted/20 backdrop-blur-sm cursor-pointer"
     >
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       
@@ -358,12 +317,15 @@ function UpdateCard({ version, title, description, isLatest = false }: { version
 // --- Copy Command ---
 function CopyCommand() {
   const [copied, setCopied] = useState(false);
-  const displayCommand = "npx create-next-app -e .../ourin-nextjs-starter";
+  const { playHover, playClick, playSuccess } = useSoundEffects(0.15);
+  const displayCommand = "npx create-next-app -e https://github.com/LuckyArch/ourin-nextjs-starter";
   const fullCommand = "npx create-next-app -e https://github.com/LuckyArch/ourin-nextjs-starter";
 
   const handleCopy = async () => {
+    playClick();
     await navigator.clipboard.writeText(fullCommand);
     setCopied(true);
+    playSuccess();
     setTimeout(() => setCopied(false), 2000);
   };
 
@@ -372,7 +334,8 @@ function CopyCommand() {
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       whileHover={{ scale: 1.02 }}
-      className="relative flex items-center justify-between w-full max-w-xl mx-auto bg-[#0a0a0a] rounded-2xl p-2 shadow-2xl ring-1 ring-white/10"
+      onMouseEnter={playHover}
+      className="relative flex items-center justify-between w-full max-w-xl mx-auto bg-[#0a0a0a] rounded-2xl p-2 shadow-2xl ring-1 ring-white/10 cursor-pointer"
     >
       <div className="flex items-center gap-3 pl-4 overflow-hidden">
         <Terminal className="w-4 h-4 text-green-400 shrink-0" />
@@ -383,6 +346,7 @@ function CopyCommand() {
       
       <button
         onClick={handleCopy}
+        onMouseEnter={playHover}
         className="flex items-center justify-center px-4 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white transition-all duration-200 shrink-0 focus:outline-none gap-2 text-sm font-medium"
       >
         {copied ? <Check className="w-4 h-4 text-green-400" /> : <Copy className="w-4 h-4" />}
@@ -394,6 +358,7 @@ function CopyCommand() {
 
 // --- Font Showcase ---
 function FontShowcase() {
+  const { playHover } = useSoundEffects(0.1);
   const fonts = [
     { name: 'Outfit', class: 'font-display', desc: 'Modern headings' },
     { name: 'Space Grotesk', class: 'font-space', desc: 'Tech & bold' },
@@ -415,7 +380,8 @@ function FontShowcase() {
           viewport={{ once: true }}
           transition={{ delay: i * 0.05 }}
           whileHover={{ scale: 1.02 }}
-          className="p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all group"
+          onMouseEnter={playHover}
+          className="p-4 rounded-xl bg-card/50 border border-border/50 hover:border-primary/30 transition-all group cursor-pointer"
         >
           <div className={`text-2xl font-bold mb-1 ${font.class} group-hover:text-primary transition-colors`}>
             Aa
@@ -430,6 +396,7 @@ function FontShowcase() {
 
 // --- Hooks Showcase ---
 function HooksShowcase() {
+  const { playHover } = useSoundEffects(0.1);
   const hooks = [
     { name: 'useDebounce', desc: 'Delay value updates', font: 'font-space', color: 'from-violet-500/20 to-purple-500/10' },
     { name: 'useFetch', desc: 'Declarative data fetching', font: 'font-poppins', color: 'from-blue-500/20 to-cyan-500/10' },
@@ -451,7 +418,8 @@ function HooksShowcase() {
           viewport={{ once: true }}
           transition={{ delay: i * 0.05 }}
           whileHover={{ y: -5, transition: { duration: 0.2 } }}
-          className={`relative p-5 rounded-2xl border border-border/50 hover:border-primary/30 transition-all overflow-hidden bg-gradient-to-br ${hook.color} backdrop-blur-sm group`}
+          onMouseEnter={playHover}
+          className={`relative p-5 rounded-2xl border border-border/50 hover:border-primary/30 transition-all overflow-hidden bg-gradient-to-br ${hook.color} backdrop-blur-sm group cursor-pointer`}
         >
           <div className="absolute top-2 right-2 opacity-10 group-hover:opacity-20 transition-opacity">
             <Boxes className="w-12 h-12" />
@@ -520,6 +488,8 @@ function UtilitiesShowcase() {
     },
   ];
 
+  const { playHover } = useSoundEffects(0.1);
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
       {categories.map((cat, i) => (
@@ -530,7 +500,8 @@ function UtilitiesShowcase() {
           viewport={{ once: true }}
           transition={{ delay: i * 0.08 }}
           whileHover={{ y: -8, transition: { duration: 0.2 } }}
-          className="relative p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all bg-card/50 backdrop-blur-sm group overflow-hidden"
+          onMouseEnter={playHover}
+          className="relative p-6 rounded-2xl border border-border/50 hover:border-primary/30 transition-all bg-card/50 backdrop-blur-sm group overflow-hidden cursor-pointer"
         >
           {/* Gradient accent */}
           <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${cat.color}`} />
@@ -565,11 +536,19 @@ function UtilitiesShowcase() {
 // --- Main Page Component ---
 export default function Home() {
   const t = useTranslations();
+  const { playHover, playClick } = useSoundEffects(0.2);
   
   return (
     <div className="min-h-screen text-foreground selection:bg-primary/30 font-sans overflow-x-hidden">
+      <Suspense fallback={null}>
+        <ScrollProgress />
+      </Suspense>
       <GridBackground />
       <FloatingNav />
+      <Suspense fallback={null}>
+        <SpotifyModal playlistId="37i9dQZF1DWWY64wDtewQt" position="bottom-left" />
+        <BackToTop position="bottom-right" />
+      </Suspense>
       
       {/* === Hero Section === */}
       <section className="relative min-h-screen flex flex-col justify-center items-center pt-32 pb-20 px-4 md:px-6">
@@ -620,11 +599,11 @@ export default function Home() {
             transition={{ duration: 0.5, delay: 0.3 }}
             className="flex flex-col sm:flex-row items-center gap-4 mb-12 w-full sm:w-auto"
           >
-            <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-105 transition-all gap-2">
+            <Button size="lg" className="w-full sm:w-auto h-14 px-8 rounded-full text-base font-bold shadow-lg shadow-primary/25 hover:shadow-primary/40 hover:scale-105 transition-all gap-2" onMouseEnter={playHover} onClick={playClick}>
               <Rocket className="w-5 h-5" />
               {t('hero.ctaPrimary')}
             </Button>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 rounded-full text-base gap-2 hover:bg-muted/50">
+            <Button size="lg" variant="outline" className="w-full sm:w-auto h-14 px-8 rounded-full text-base gap-2 hover:bg-muted/50" onMouseEnter={playHover} onClick={playClick}>
               <Github className="w-5 h-5" />
               {t('hero.ctaSecondary')}
             </Button>
@@ -647,11 +626,62 @@ export default function Home() {
             transition={{ delay: 0.6 }}
             className="flex flex-wrap justify-center gap-3 mt-12"
           >
-            {['Next.js 16', 'React 19', 'TypeScript 5', 'Tailwind 4', 'next-intl'].map((tech) => (
-              <span key={tech} className="px-3 py-1.5 rounded-full bg-muted/50 text-xs font-medium text-muted-foreground border border-border/50">
-                {tech}
-              </span>
-            ))}
+            {/* Next.js - Black pill white text */}
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-black text-white text-xs font-bold shadow-md hover:scale-105 transition-transform">
+              <svg viewBox="0 0 180 180" className="w-4 h-4" fill="currentColor">
+                <mask id="mask0_408_134" style={{maskType: 'alpha'}} maskUnits="userSpaceOnUse" x="0" y="0" width="180" height="180">
+                  <circle cx="90" cy="90" r="90" fill="black"/>
+                </mask>
+                <g mask="url(#mask0_408_134)">
+                  <circle cx="90" cy="90" r="90" fill="black"/>
+                  <path d="M149.508 157.52L69.142 54H54V125.97H66.1136V69.3836L139.999 164.845C143.333 162.614 146.509 160.165 149.508 157.52Z" fill="url(#paint0_linear)"/>
+                  <rect x="115" y="54" width="12" height="72" fill="url(#paint1_linear)"/>
+                </g>
+                <defs>
+                  <linearGradient id="paint0_linear" x1="109" y1="116.5" x2="144.5" y2="160.5" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="white"/>
+                    <stop offset="1" stopColor="white" stopOpacity="0"/>
+                  </linearGradient>
+                  <linearGradient id="paint1_linear" x1="121" y1="54" x2="120.799" y2="106.875" gradientUnits="userSpaceOnUse">
+                    <stop stopColor="white"/>
+                    <stop offset="1" stopColor="white" stopOpacity="0"/>
+                  </linearGradient>
+                </defs>
+              </svg>
+              Next.js 16
+            </span>
+            
+            {/* React - Cyan bg black text */}
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#61DAFB] text-black text-xs font-bold shadow-md hover:scale-105 transition-transform">
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="black">
+                <path d="M12 10.11c1.03 0 1.87.84 1.87 1.89 0 1-.84 1.85-1.87 1.85-1.03 0-1.87-.85-1.87-1.85 0-1.05.84-1.89 1.87-1.89M7.37 20c.63.38 2.01-.2 3.6-1.7-.52-.59-1.03-1.23-1.51-1.9a22.7 22.7 0 0 1-2.4-.36c-.51 2.14-.32 3.61.31 3.96m.71-5.74-.29-.51c-.11.29-.22.58-.29.86.27.06.57.11.88.16l-.3-.51m6.54-.76.81-1.5-.81-1.5c-.3-.53-.62-1-.91-1.47C13.17 9 12.6 9 12 9c-.6 0-1.17 0-1.71.03-.29.47-.61.94-.91 1.47L8.57 12l.81 1.5c.3.53.62 1 .91 1.47.54.03 1.11.03 1.71.03.6 0 1.17 0 1.71-.03.29-.47.61-.94.91-1.47M12 6.78c-.19.22-.39.45-.59.72h1.18c-.2-.27-.4-.5-.59-.72m0 10.44c.19-.22.39-.45.59-.72h-1.18c.2.27.4.5.59.72M16.62 4c-.62-.38-2 .2-3.59 1.7.52.59 1.03 1.23 1.51 1.9.82.08 1.63.2 2.4.36.51-2.14.32-3.61-.32-3.96m-.7 5.74.29.51c.11-.29.22-.58.29-.86-.27-.06-.57-.11-.88-.16l.3.51m1.45-7.05c1.47.84 1.63 3.05 1.01 5.63 2.54.75 4.37 1.99 4.37 3.68 0 1.69-1.83 2.93-4.37 3.68.62 2.58.46 4.79-1.01 5.63-1.46.84-3.45-.12-5.37-1.95-1.92 1.83-3.91 2.79-5.38 1.95-1.46-.84-1.62-3.05-1-5.63-2.54-.75-4.37-1.99-4.37-3.68 0-1.69 1.83-2.93 4.37-3.68-.62-2.58-.46-4.79 1-5.63 1.47-.84 3.46.12 5.38 1.95 1.92-1.83 3.91-2.79 5.37-1.95M17.08 12c.34.75.64 1.5.89 2.26 2.1-.63 3.28-1.53 3.28-2.26 0-.73-1.18-1.63-3.28-2.26-.25.76-.55 1.51-.89 2.26M6.92 12c-.34-.75-.64-1.5-.89-2.26-2.1.63-3.28 1.53-3.28 2.26 0 .73 1.18 1.63 3.28 2.26.25-.76.55-1.51.89-2.26m9 2.26-.3.51c.31-.05.61-.1.88-.16-.07-.28-.18-.57-.29-.86l-.29.51m-2.89 4.04c1.59 1.5 2.97 2.08 3.59 1.7.64-.35.83-1.82.32-3.96-.77.16-1.58.28-2.4.36-.48.67-.99 1.31-1.51 1.9M8.08 9.74l.3-.51c-.31.05-.61.1-.88.16.07.28.18.57.29.86l.29-.51m2.89-4.04C9.38 4.2 8 3.62 7.37 4c-.63.35-.82 1.82-.31 3.96a22.7 22.7 0 0 1 2.4-.36c.48-.67.99-1.31 1.51-1.9Z"/>
+              </svg>
+              React 19
+            </span>
+            
+            {/* TypeScript - Blue bg white text */}
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#3178C6] text-white text-xs font-bold shadow-md hover:scale-105 transition-transform">
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
+                <path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 0 1 1.306.34v2.458a3.95 3.95 0 0 0-.643-.361 5.093 5.093 0 0 0-.717-.26 5.453 5.453 0 0 0-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 0 0-.623.242c-.17.104-.3.229-.393.374a.888.888 0 0 0-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 0 1-1.012 1.085 4.38 4.38 0 0 1-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 0 1-1.84-.164 5.544 5.544 0 0 1-1.512-.493v-2.63a5.033 5.033 0 0 0 3.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 0 0-.074-1.089 2.12 2.12 0 0 0-.537-.5 5.597 5.597 0 0 0-.807-.444 27.72 27.72 0 0 0-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 0 1 1.47-.629 7.536 7.536 0 0 1 1.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z"/>
+              </svg>
+              TypeScript 5
+            </span>
+            
+            {/* Tailwind - Cyan bg white text */}
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#06B6D4] text-white text-xs font-bold shadow-md hover:scale-105 transition-transform">
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
+                <path d="M12.001 4.8c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624C13.666 10.618 15.027 12 18.001 12c3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C16.337 6.182 14.976 4.8 12.001 4.8zm-6 7.2c-3.2 0-5.2 1.6-6 4.8 1.2-1.6 2.6-2.2 4.2-1.8.913.228 1.565.89 2.288 1.624 1.177 1.194 2.538 2.576 5.512 2.576 3.2 0 5.2-1.6 6-4.8-1.2 1.6-2.6 2.2-4.2 1.8-.913-.228-1.565-.89-2.288-1.624C10.337 13.382 8.976 12 6.001 12z"/>
+              </svg>
+              Tailwind 4
+            </span>
+            
+            {/* next-intl - Violet bg white text */}
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#8B5CF6] text-white text-xs font-bold shadow-md hover:scale-105 transition-transform">
+              <svg viewBox="0 0 24 24" className="w-4 h-4" fill="white">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.95-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              </svg>
+              next-intl
+            </span>
           </motion.div>
         </div>
       </section>
